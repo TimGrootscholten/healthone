@@ -16,19 +16,21 @@ body {
   background-color: rgb(243, 243, 243);
   justify-content: space-evenly;
 }
-.topnav a {
+.topnav input {
   float: left;
   color: black;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 1.4em;
+  border: none;
 }
 
-.topnav a:hover {
+.topnav input:hover {
   background-color: #ddd;
 }
 
-.topnav a.active {
+.topnav input.active {
   background-color: #ddd;
+  border: none;
 }
