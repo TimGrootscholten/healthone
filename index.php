@@ -20,8 +20,11 @@ elseif(isset($_POST['receptInfo'])){
 elseif(isset($_POST['log-out'])){
     $controller->show('Login');
 }
-elseif (isset($_POST['test'])){
-    $controller->searchPation($_POST['test']);
+elseif (isset($_POST['zoekPatient'])){
+    $controller->search('patient');
+}
+elseif (isset($_POST['zoekRecept'])){
+$controller->search('recept');
 }
 /*laat de login zien */
 else {

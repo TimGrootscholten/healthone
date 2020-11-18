@@ -6,11 +6,25 @@ include_once('MVC/model/Model.php');
 class View
 {
 
+    public $recept;
+    public $patient;
     private $model;
 
     public function __construct($model)
     {
         $this->model = $model;
+    }
+
+    public function showheader(){
+        echo "<header>
+   <form method='post' action='index.php'>
+    <div class='topnav nav-tabs'>
+        <input type='submit' name='dashboard' value='Dashboard' '>
+        <input type='submit' name='create' value='Create'>
+        <input type='submit' name='log-out' value='Log-out'>
+    </div>
+</from>
+</header>";
     }
 
     public function showLogin()
@@ -59,6 +73,7 @@ class View
         include 'css/style.css';
         include "css/styleDashboard.css";
         echo "</style>";
+        $this->showheader();
         echo "<!DOCTYPE html>
 <html lang='en'>
 
@@ -70,15 +85,6 @@ class View
 </head>
 
 <body>
-<header>
-   <form method='post' action='index.php'>
-    <div class='topnav nav-tabs'>
-        <input type='submit' name='dashboard' value='Dashboard' class='active'>
-        <input type='submit' name='create' value='Create'>
-        <input type='submit' name='log-out' value='Log-out'>
-    </div>
-</from>
-</header>
 <main>
     <div class='recepts'>
 
@@ -114,20 +120,29 @@ class View
 </html>";
     }
 
-    public function showCreate($searchValue){
-        $value = $searchValue[0];
-        $searchSucces= $searchValue[1];
+    public function showCreate($searchValue)
+    {
+        $this->showheader();
+        if ($searchValue[2] == 'patient') {
+            $this->patient = $searchValue[0];
+            if ($searchValue[1] == true){
+                $searchSucces = 'truepatient';
+            }else{
+                $searchSucces = 'falsepatient';
+            }
+        } elseif ($searchValue[2] == 'recept') {
+            $this->recept = $searchValue[0];
+            if ($searchValue[1]) {
+                $searchSucces = 'truerecept';
+            } else {
+                $searchSucces = 'falserecept';
+            }
+        }
         echo "<style>";
         include 'css/style.css';
         include "css/styleCreate.css";
         echo "</style>";
 
-        echo "
-         <form method='post' action='index.php'>
-            <input type='text' class='form-control' name='value'
-                   placeholder='search'>
-        <input type='submit' name='test' class='btn btn-primary'>
-    </form>";
         echo "
         <!DOCTYPE html>
 <html lang='en'>
@@ -140,42 +155,32 @@ class View
 </head>
 
 <body>
- <header>
-   <form method='post' action='index.php'>
-    <div class='topnav nav-tabs'>
-        <input type='submit' name='dashboard' value='Dashboard'>
-        <input type='submit' name='create' value='Create' class='active'>
-        <input type='submit' name='log-out' value='Log-out'>
-    </div>
-</from>
-</header>
   <main>
     <form>
-          <h2>Patiënten gegevens</h2>
-          <div class='container'>
-            <div class='item'>
-              <input class='form-control mr-sm-2' value='' type='text' placeholder='Naam'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Geboorte datum'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Geslacht'>
-            </div>
-            <div class='item'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Patiënt nummer'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Adres'>
-            </div>
-          </div>
-          <h2>Recept gegevens</h2>
-          <div class='container'>
-            <div class='item'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Id'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Naam'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Type recept'>
-            </div>
-            <div class='item'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Dosiring'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Verzekerings type'>
-              <input class='form-control mr-sm-2' type='text' placeholder='Docker'>
-            </div>
-          </div>
+          <h2>Patiënten gegevens</h2>";
+        if ($searchSucces == 'truepatient') {
+            echo $this->patient['id'] . $this->patient['naam'] . $this->patient['adres'] . $this->patient['woonplaats'] . $this->patient['zknummer'] . $this->patient['geboortedatum'] . $this->patient['soortverzekering'];
+        } elseif ($searchSucces == 'falsepatient') {
+            echo "niet gevonden";
+        }
+        echo "
+          <form method='post' action='index.php'>
+            <input type='text' class='form-control' name='value'
+                   placeholder='Zoek patiënten'>
+        <input type='submit' name='zoekPatient' value='Zoeken' class='btn btn-primary'>
+          <h2>Recept gegevens</h2>";
+        if ($searchSucces == 'truerecept') {
+            echo $this->recept['id'] . $this->recept['naam'];
+        } elseif ($searchSucces == 'falserecept') {
+            echo "niet gevonden";
+        }
+
+        echo "</form>
+    <form method='post' action='index.php'>
+            <input type='text' class='form-control' name='value'
+                   placeholder='Zoek recept'>
+        <input type='submit' name='zoekRecept' value='Zoeken' class='btn btn-primary'>
+    </form>
           <textarea name='Text1' cols='150' placeholder='Werking' rows='4'></textarea><br>
           <textarea name='Text1' cols='150' placeholder='Bijwerkingen' rows='4'></textarea><br>
           <textarea name='Text1' cols='150' placeholder='Notities' rows='4'></textarea>
@@ -187,7 +192,8 @@ class View
 </html>";
     }
 
-    public function showReceptInfo(){
+    public function showReceptInfo()
+    {
 
         echo "
          <form class='receptInfo' style='display: none;'>

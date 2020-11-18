@@ -37,8 +37,25 @@ class Model
         $selection->execute();
         if ($selection->rowCount() == 1) {
             $result = $selection->fetch(PDO::FETCH_ASSOC);
-            echo $result['id'];
-            return[$result, true];
+            return [$result, true, 'patient'];
+        } else {
+            return [null, false, 'patient'];
         }
+
+    }
+
+    public function getRecept($searchValue)
+    {
+        $this->makeConnection();
+        $selection = $this->database->prepare('SELECT * FROM medicijnen WHERE id = :searchvalue OR naam = :searchvalue');
+        $selection->bindParam(":searchvalue", $searchValue);
+        $selection->execute();
+        if ($selection->rowCount() == 1) {
+            $result = $selection->fetch(PDO::FETCH_ASSOC);
+            return [$result, true, 'recept'];
+        } else {
+            return [null, false, 'recept'];
+        }
+
     }
 }
