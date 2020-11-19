@@ -1,10 +1,9 @@
 <?php
 
-namespace controller;
-include_once "MVC/view/View.php";
+namespace MVC\controller;
 
-use model\Model;
-use view\View;
+use MVC\model\Model;
+use MVC\view\View;
 
 class Controller
 {
@@ -20,7 +19,7 @@ class Controller
     public function show($value)
     {
         $value = 'show' . $value;
-        $this->view->$value([null, null, null]);
+        $this->view->$value([null, false, 'patient']);
     }
 
     public function checkLogin()
@@ -39,9 +38,20 @@ class Controller
         $searchValue = filter_input(INPUT_POST, "value", FILTER_SANITIZE_STRING);
         if ($what == 'patient') {
             $searchresult = $this->model->getPation($searchValue);
-        } elseif ($what == 'recept') {
+        } elseif ($what == 'medicijn') {
             $searchresult = $this->model->getRecept($searchValue);
         }
         $this->view->showCreate($searchresult);
+    }
+
+    public function showPastient(){
+        $patienten = $this->model->getPatienten();
+        $this->view->showPatienten($patienten);
+    }
+
+    public function patientWijzigen(){
+        $id = $_REQUEST['patientWijzigen'];
+        $patientInfo = $this->model->getPatientById($id);
+        $this->view->showPatientInfo($patientInfo);
     }
 }

@@ -1,10 +1,9 @@
 <?php
 
 
-namespace model;
+namespace MVC\model;
 
 use PDO;
-
 
 class Model
 {
@@ -52,10 +51,35 @@ class Model
         $selection->execute();
         if ($selection->rowCount() == 1) {
             $result = $selection->fetch(PDO::FETCH_ASSOC);
-            return [$result, true, 'recept'];
+            return [$result, true, 'medicijn'];
         } else {
-            return [null, false, 'recept'];
+            return [null, false, 'medicijn'];
         }
+
+    }
+
+    /*
+     * Patienten
+     */
+
+    public function getPatienten()
+    {
+        $this->makeConnection();
+        $selection = $this->database->query('SELECT * FROM patienten');
+        $selection->execute();
+        $result = $selection->fetchAll(PDO::FETCH_ASSOC);
+        if ($result !== null) return $result;
+        return null;
+    }
+
+    public function getPatientById($id){
+        $this->makeConnection();
+        $selection = $this->database->prepare('SELECT * FROM patienten WHERE id =:id');
+        $selection->bindParam(":id", $id);
+        $selection->execute();
+        $result = $selection->fetch(PDO::FETCH_ASSOC);
+        if ($result !== null) return $result;
+        return null;
 
     }
 }
