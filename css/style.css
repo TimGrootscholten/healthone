@@ -1,6 +1,5 @@
 * {
   padding: 0px;
-  box-sizing: 0px;
   margin: 0px;
   font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco",
     "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
@@ -34,3 +33,9 @@ body {
   background-color: #ddd;
   border: none;
 }
+.wijzigen{
+  width: 50%;
+  margin: 2em auto 0px auto;
+}
+
+

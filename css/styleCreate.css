@@ -16,10 +16,14 @@ h2{
 }
 
 textarea{
+  margin-top: 1em;
   border-radius: 0.5em;
   align-items: center;
-  width: 72%;
+  width: 100%;
   padding-left: 0.5em;
-  margin: 1em 0 0 14%;
 }
 
+main{
+  width: 80%;
+  margin: 1em auto 0 auto;
+}

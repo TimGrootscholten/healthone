@@ -29,51 +29,79 @@ class View
         $this->Patienten = new \MVC\view\Patienten();
     }
 
-    public function showheader(){
+    public function showheader()
+    {
         echo <<<EOF
- <header>
-   <form method='post' action='index.php'>
-    <div class='topnav nav-tabs'>
-        <input type='submit' name='dashboard' value='Dashboard' '>
-        <input type='submit' name='create' value='Create'>
-        <input type='submit' name='getMedicijnen' value='Medicijnen'>
-        <input type='submit' name='getPatienten' value='Patiënten'>
-        <input type='submit' name='log-out' value='Log-out'>
-    </div>
-</from>
-</header>
+    <header>
+     <form method='post' action='index.php'>
+        <div class='topnav nav-tabs'>
+            <input type='submit' name='dashboard' value='Dashboard'>
+            <input type='submit' name='create' value='Create'>
+            <input type='submit' name='getMedicijnen' value='Medicijnen'>
+            <input type='submit' name='getPatienten' value='Patiënten'>
+            <input type='submit' name='log-out' value='Log-out'>
+        </div>
+      </from>
+    </header>
 EOF;
     }
 
-    public function showLogin(){
+    public function showLogin()
+    {
         $this->login->showLogin();
-    }
+    }    
 
-    public function showDashboard(){
+    //dashboard
+    public function showDashboard()
+    {
         $this->showheader();
         $this->Dashboard->showDashboard();
     }
 
-    public function showCreate($searchValue){
+    //create
+    public function showCreate()
+    {
         $this->showheader();
-        $this->Create->showCreate($searchValue);
+        $this->Create->showCreate();
     }
 
-    public function showMedicijnen(){
+    //medicijnen
+    public function showMedicijnen($medicijnen)
+    {
         $this->showheader();
-        $this->Medicijnen->showMedicijnen();
+        $this->Medicijnen->showMedicijnen($medicijnen);
     }
 
-    public function showPatienten($patienten){
+    public function showMedicijnInfo($medicijnInfo)
+    {
+        $this->showheader();
+        $this->Medicijnen->showMedicijnInfo($medicijnInfo);
+    }
+
+    public function showMedicijnCreate()
+    {
+        $this->showheader();
+        $this->Medicijnen->showMedicijnCreate();
+    }
+
+    //patient
+    public function showPatienten($patienten)
+    {
         $this->showheader();
         $this->Patienten->showPatienten($patienten);
     }
 
-    public function showPatientInfo($patientInfo){
+    public function showPatientInfo($patientInfo)
+    {
         $this->showheader();
         $this->Patienten->showPatientInfo($patientInfo);
     }
 
+    public function showPatientCreate()
+    {
+        $this->showheader();
+        $this->Patienten->showPatientCreate();
+    }
     public function showReceptInfo()
     {
 

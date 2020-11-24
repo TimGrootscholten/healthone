@@ -30,7 +30,7 @@ class Login
 <main>
     <form method='post' action='index.php'>
         <div class='form-group'>
-            <label for='exampleInputEmail1'>Email address</label>
+            <label for='exampleInputEmail1'>Email addres</label>
             <input value='h.bannink@big.nl' type='email' class='form-control' name='email'
                    aria-describedby='emailHelp'
                    placeholder='Enter email'>
