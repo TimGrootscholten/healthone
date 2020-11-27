@@ -1,12 +1,10 @@
 <?php
 
-
 namespace MVC\view;
-
 
 class Dashboard
 {
-    public function showDashboard()
+    public function showDashboard($recepten)
     {
         echo "<style>";
         include 'css/style.css';
@@ -19,36 +17,29 @@ class Dashboard
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css'>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
             <title>Health One</title>
         </head>
         
         <body>
             <main>
                 <div class='recepts'>
-        
-                    <div class='search'>
-                        <form>
-                            <input class='form-control mr-sm-2' type='search' placeholder='Search' aria-label='Search'>
-                            <button class='btn btn-outline-success my-2 my-sm-0' type='submit'>Search</button>
-                        </form>
-                    </div>
                     <table class='table'>
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Datum</th>
                                 <th>Naam</th>
+                                <th>zk nummer</th>
                                 <th>Type</th>
+                                <th>Medicijn(en) id</th>
+                                <th>Soortverzekering</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th>345092</th>
-                                <td>29-03-2003</td>
-                                <td>Tim Grootscholten</td>
-                                <td>Eenmalig</td>
-                            </tr>
+                        <tbody> 
+EOF;
+        $this->recepten($recepten);
+        echo <<<EOF
                         </tbody>
                     </table>
                 </div>
@@ -57,5 +48,32 @@ class Dashboard
         
         </html>
 EOF;
+    }
+    private function recepten($recepten)
+    {
+        for ($i = 0; count($recepten[0]) - 1 >= $i; $i++) {
+            if ($recepten[0][$i]['herhaling'] == 1) {
+                $recepten[0][$i]['herhaling'] = 'Herhaling';
+            } else $recepten[0][$i]['herhaling'] = 'Eenmalig';
+            echo "
+            <tr>
+                <th>" . $recepten[0][$i]['id'] . "</th>
+                <td>" . $recepten[0][$i]['date'] . "</td>
+                <td>" . $recepten[1][$i]['naam'] . "</td>
+                <td>" . $recepten[1][$i]['zknummer'] . "</td>
+                <td>" . $recepten[0][$i]['herhaling'] . "</td>
+                <td>" . implode(", ", json_decode($recepten[0][$i]['medicijnenId'])) . "</td>
+                <td>" . $recepten[1][$i]['soortverzekering'] . "</td>
+                <td>
+                <form action='index.php' method='post'>
+                <input type='hidden' name='receptInfo' value=" . $recepten[0][$i]['id'] . ">
+                <input class='btn btn-primary' type='submit' value='Info'/>
+                </form>
+                
+                </td>
+                </tr>
+                ";
+            
+        }
     }
 }

@@ -18,13 +18,24 @@ class Controller
 
     public function checkLogin()
     {
-        $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
-        $password = sha1($_POST['password']);
-        if ($query = $this->model->checkLogin($email, $password)->rowCount() == 1) {
-            $this->view->showDashboard();
+        if (isset($_POST['email']) && isset($_POST['password'])) {
+            $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+            $password = filter_input(INPUT_POST, 'password');
+            $this->model->checkLogin($email, $password);
+
+            if (isset($_SESSION['role']) && $_SESSION['role'] === 'arts') {
+                $this->showDashboard();
+            } else {
+                $this->view->showLogin();
+            }
         } else {
             $this->view->showLogin();
         }
+    }
+
+    public function logoutAction()
+    {
+        $this->model->logout();;
     }
 
     public function search($what)
@@ -32,17 +43,10 @@ class Controller
         $searchValue = filter_input(INPUT_POST, "value", FILTER_SANITIZE_STRING);
         if ($what == 'patient') {
             $searchresult = $this->model->getPation($searchValue);
-            if ($searchresult[0] == 'patient') {
-                setcookie("patient", json_encode($searchresult[2]));
-            }
         } elseif ($what == 'medicijn') {
             $searchresult = $this->model->getMedicijn($searchValue);
-            if ($searchresult[0] == 'medicijn') {
-                @ $i = count($_COOKIE['medicijn']) + 1;
-                setcookie("medicijn[$i]", json_encode($searchresult[2]));
-            }
         }
-        $this->view->showCreate();
+        $this->view->showCreate($searchresult);
     }
 
     public function patientWijzigen()
@@ -151,12 +155,35 @@ class Controller
         }
         $this->model->removeCookie($cookieNaam);
         $this->show('create');
-
     }
 
     public function show($value)
     {
         $value = 'show' . $value;
         $this->view->$value([null, false]);
+    }
+
+    public function createRecept()
+    {
+        $patientId = filter_input(INPUT_POST, 'patientId', FILTER_SANITIZE_NUMBER_INT);
+        $medicijnId = filter_input(INPUT_POST, 'medicijnId');
+        $notities = filter_input(INPUT_POST, 'notitie', FILTER_SANITIZE_STRING);
+        $herhaling = filter_input(INPUT_POST, 'herhaling');
+
+        $this->model->createRecept($patientId, $medicijnId, $notities, $herhaling);
+        $this->showDashboard();
+    }
+
+    public function showDashboard()
+    {
+        $recepten = $this->model->getRecepten();
+        $this->view->showDashboard($recepten);
+    }
+
+    public function showReceptInfo()
+    {
+        $id = $_REQUEST['receptInfo'];
+        $info = $this->model->showReceptById($id);
+        $this->view->showReceptInfo($info);
     }
 }

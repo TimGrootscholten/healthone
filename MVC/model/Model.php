@@ -9,19 +9,53 @@ class Model
 {
     private $database;
 
-    public function checkLogin($email, $password)
-    {
+    public function checkLogin($email, $password){
         $this->makeConnection();
+        $password = strtoupper(hash("sha256", $password));
         $selection = $this->database->prepare("SELECT * FROM auth WHERE email = :email AND password = :password");
-        $selection->bindParam(":email", $email);
+        $selection->bindParam(":email",$email);
         $selection->bindParam(":password", $password);
         $selection->execute();
         if ($selection->rowCount() == 1) {
             $result = $selection->fetch(PDO::FETCH_ASSOC);
-            setcookie("token", $result['id']);
+            $_SESSION['user'] = $result['voornaam'];
+            $_SESSION['role'] = $result['role'];
         }
-        return $selection;
+        
+        
+        
+        
+        // if($result) {
+        //     $selection->setFetchMode(\PDO::FETCH_CLASS, \model\User::class);
+        //     $user = $selection->fetch();
+        //     if ($user) {
+        //         $gehashtpassword = strtoupper(hash("sha256", $password));
+        //         if ($user->getPassword() == $gehashtpassword) {
+        //             $_SESSION['user'] = $user->getUsername();
+        //             $_SESSION['role'] = $user->getRole();
+        //         }
+        //     }
+        // }
     }
+
+    public function logout(){
+        session_unset();
+        session_destroy();
+    }
+
+    // public function checkLogin($email, $password)
+    // {
+    //     $this->makeConnection();
+    //     $selection = $this->database->prepare("SELECT * FROM auth WHERE email = :email AND password = :password");
+    //     $selection->bindParam(":email", $email);
+    //     $selection->bindParam(":password", $password);
+    //     $selection->execute();
+    //     if ($selection->rowCount() == 1) {
+    //         $result = $selection->fetch(PDO::FETCH_ASSOC);
+    //         setcookie("token", $result['id']);
+    //     }
+    //     return $selection;
+    // }
 
     private function makeConnection()
     {
@@ -36,11 +70,10 @@ class Model
         $selection->execute();
         if ($selection->rowCount() == 1) {
             $result = $selection->fetch(PDO::FETCH_ASSOC);
-            return ['patient', true, $result];
-        } else {
-            return [null, false, null];
+            setcookie("patient", json_encode($result));
+            return [$result, 'patient'];
         }
-
+        return [null, null];
     }
 
     public function getMedicijn($searchValue)
@@ -51,11 +84,20 @@ class Model
         $selection->execute();
         if ($selection->rowCount() == 1) {
             $result = $selection->fetch(PDO::FETCH_ASSOC);
-            return ['medicijn', true, $result];
-        } else {
-            return [null, false, null];
+            @$i = count($_COOKIE['medicijn']) + 1;
+            setcookie("medicijn[$i]", json_encode($result));
+            $medicijnen = array();
+            if (isset($_COOKIE['medicijn'])) {
+                foreach ($_COOKIE['medicijn'] as $id => $value) {
+                    $id = htmlspecialchars($id);
+                    $medicijn = (array)json_decode($value);
+                    array_push($medicijnen, $medicijn);
+                }
+            }
+            array_push($medicijnen, $result);
+            return [$medicijnen, 'medicijn'];
         }
-
+        return [null, null];
     }
 
     /*
@@ -193,7 +235,69 @@ class Model
         }
     }
 
-    public function removeCookie($cookieNaam){
+    public function removeCookie($cookieNaam)
+    {
         setcookie($cookieNaam, null);
+    }
+
+    public function createRecept($patientId, $medicijnId, $notities, $herhaling)
+    {
+        $this->makeConnection();
+        if($herhaling == null){
+            $herhaling = 0;
+        }else{
+            $herhaling = 1;
+        }
+        $date = date("Y-m-d");
+        if($medicijnId !== '[]' && $patientId !== '' ){
+            $selection = $this->database->prepare("INSERT INTO recepten (id, notitie, patientId, medicijnenId, herhaling, date) 
+            VALUES (NULL, :notitie, :patientId, :medicijnId, :herhaling, :date)");
+            $selection->bindParam('notitie', $notities);
+            $selection->bindParam('patientId', $patientId);
+            $selection->bindParam('medicijnId', $medicijnId);
+            $selection->bindParam('herhaling', $herhaling);
+            $selection->bindParam('date', $date);
+            $selection->execute();
+            setcookie("patient", null);
+            foreach ($_COOKIE['medicijn'] as $id => $value) {
+                $id = htmlspecialchars($id);
+                setcookie("medicijn[$id]", null);
+            }
+        }
+
+    }
+    public function getRecepten(){
+        $this->makeConnection();
+        $selection = $this->database->query('SELECT * FROM recepten');
+        $selection->execute();
+        $result = $selection->fetchAll(PDO::FETCH_ASSOC);
+        if ($result !== null){   
+            $patienten = array();  
+            foreach($result as $recept){
+                $patient = $this->getPatientById($recept['patientId']);
+                array_push($patienten, $patient);
+            }
+
+            return [$result, $patienten];  
+        } 
+        return null;
+    }
+
+    public function showReceptById($id){
+        $this->makeConnection();
+        $selection = $this->database->prepare('SELECT * FROM recepten WHERE recepten.id =:id');
+        $selection->bindParam(":id", $id);
+        $result = $selection->execute();
+        $result = $selection->fetch(PDO::FETCH_ASSOC);
+        if($result !== null){
+            $patient =$this->getPatientById($result['patientId']);
+            $medicijnId = json_decode($result['medicijnenId']);
+            $medicijnen = array();
+            foreach($medicijnId as $medicijn){
+                $medicijn = $this->getMedicijnById($medicijn);
+                array_push($medicijnen, $medicijn);
+            }
+            return [$result, $patient, $medicijnen];
+        }
     }
 }

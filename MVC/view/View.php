@@ -7,17 +7,19 @@ use MVC\view\Dashboard;
 use MVC\view\Create;
 use MVC\view\Medicijnen;
 use MVC\view\Patienten;
+use MVC\view\ReceptenInfo;
+
 
 
 class View
 {
-
-
     private $login;
     private $Dashboard;
     private $Create;
     private $Medicijnen;
     private $Patienten;
+    private $ReceptenInfo;
+
 
 
     public function __construct()
@@ -27,6 +29,7 @@ class View
         $this->Create = new \MVC\view\Create();
         $this->Medicijnen = new \MVC\view\Medicijnen();
         $this->Patienten = new \MVC\view\Patienten();
+        $this->ReceptenInfo = new \MVC\view\ReceptenInfo();
     }
 
     public function showheader()
@@ -39,7 +42,7 @@ class View
             <input type='submit' name='create' value='Create'>
             <input type='submit' name='getMedicijnen' value='Medicijnen'>
             <input type='submit' name='getPatienten' value='Patiënten'>
-            <input type='submit' name='log-out' value='Log-out'>
+            <input type='submit' name='logout' value='Log-out'>
         </div>
       </from>
     </header>
@@ -52,17 +55,17 @@ EOF;
     }    
 
     //dashboard
-    public function showDashboard()
+    public function showDashboard($recepten)
     {
         $this->showheader();
-        $this->Dashboard->showDashboard();
+        $this->Dashboard->showDashboard($recepten);
     }
 
     //create
-    public function showCreate()
+    public function showCreate($searchresult)
     {
         $this->showheader();
-        $this->Create->showCreate();
+        $this->Create->showCreate($searchresult);
     }
 
     //medicijnen
@@ -102,38 +105,11 @@ EOF;
         $this->showheader();
         $this->Patienten->showPatientCreate();
     }
-    public function showReceptInfo()
+    public function showReceptInfo($info)
     {
-
-        echo "
-         <form class='receptInfo' style='display: none;'>
-        <h2>Patiënten gegevens</h2>
-        <div class='container'>
-            <div class='item'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Naam'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Geboorte datum'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Geslacht'>
-            </div>
-            <div class='item'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Patiënt nummer'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Adres'>
-            </div>
-        </div>
-        <h2>Recept gegevens</h2>
-        <div class='container'>
-            <div class='item'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Id'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Naam'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Type recept'>
-            </div>
-            <div class='item'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Dosiring'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Verzekerings type'>
-                <input class='form-control mr-sm-2' type='text' placeholder='Docker'>
-            </div>
-        </div>
-      
-    </form>";
+        $this->showheader();
+        $this->ReceptenInfo->ReceptenInfo($info);
+     
     }
     /*
      *   <textarea name='Text1' cols='150' placeholder='Werking' rows='4'></textarea><br>
